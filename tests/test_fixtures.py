@@ -332,3 +332,15 @@ class Test_django_db_blocker:
     def test_unblock_with_block(self, django_db_blocker):
         with django_db_blocker.unblock():
             Item.objects.exists()
+
+
+@pytest.mark.parametrize('run_no', [(1,), (2,)])
+def test_clear_site_cache(run_no):
+    """
+    Run this two times, would fail on run #2 if SITE_CAHCE would not be cleared.
+
+    Note that this test might start to fail if we choose to use pytest-xdist -n.
+    """
+    from django.contrib.sites.models import SITE_CACHE
+    assert len(SITE_CACHE) == 0
+    SITE_CACHE[run_no] = 'run_no {}'.format(run_no)
